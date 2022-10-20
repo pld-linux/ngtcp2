@@ -1,5 +1,5 @@
 # TODO:
-# - subpackage crypto libs?
+# - subpackage crypto libs
 # - boringssl, picotls?
 #
 # Conditional build:
@@ -11,13 +11,13 @@
 Summary:	Effort to implement QUIC protocol (RFC 9000)
 Summary(pl.UTF-8):	Próba implementacji protokołu QUIC (RFC 9000)
 Name:		ngtcp2
-Version:	0.6.0
+Version:	0.10.0
 Release:	1
 License:	MIT
 Group:		Libraries
 #Source0Download: https://github.com/ngtcp2/ngtcp2/releases
 Source0:	https://github.com/ngtcp2/ngtcp2/releases/download/v%{version}/%{name}-%{version}.tar.xz
-# Source0-md5:	1ee949ace10d8db1371d180a504184bc
+# Source0-md5:	494db5cc6302c6dbc0bb866dcc3a098c
 URL:		https://github.com/ngtcp2/ngtcp2
 %{?with_gnutls:BuildRequires:	gnutls-devel >= 3.7.2}
 BuildRequires:	libev-devel
@@ -108,7 +108,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc AUTHORS COPYING ChangeLog README.rst
 %attr(755,root,root) %{_libdir}/libngtcp2.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libngtcp2.so.5
+%attr(755,root,root) %ghost %{_libdir}/libngtcp2.so.8
 %if %{with gnutls}
 %attr(755,root,root) %{_libdir}/libngtcp2_crypto_gnutls.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libngtcp2_crypto_gnutls.so.2
@@ -117,10 +117,14 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libngtcp2.so
-%{_includedir}/ngtcp2
+%dir %{_includedir}/ngtcp2
+%{_includedir}/ngtcp2/ngtcp2.h
+%{_includedir}/ngtcp2/ngtcp2_crypto.h
+%{_includedir}/ngtcp2/version.h
 %{_pkgconfigdir}/libngtcp2.pc
 %if %{with gnutls}
 %attr(755,root,root) %{_libdir}/libngtcp2_crypto_gnutls.so
+%{_includedir}/ngtcp2/ngtcp2_crypto_gnutls.h
 %{_pkgconfigdir}/libngtcp2_crypto_gnutls.pc
 %endif
 
