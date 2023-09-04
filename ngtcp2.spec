@@ -1,6 +1,5 @@
 # TODO:
-# - subpackage crypto libs
-# - boringssl, picotls, wolfssl >= 5.5.0?
+# - boringssl, picotls, wolfssl >= 5.5.0? (in -crypto-* subpackages)
 #
 # Conditional build:
 %bcond_with	apidocs		# API documentation (files missing in tarball)
@@ -28,7 +27,6 @@ BuildRequires:	pkgconfig >= 1:0.20
 BuildRequires:	rpm-build >= 4.6
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	xz
-%{?with_gnutls:Requires:	gnutls-libs >= 3.7.3}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -42,8 +40,6 @@ Summary:	Header files for ngtcp2 library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki ngtcp2
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-%{?with_gnutls:Requires:	gnutls-devel >= 3.7.3}
-%{?with_openssl:Requires:	openssl-devel(quic) >= 1.1.1}
 
 %description devel
 Header files for ngtcp2 library.
@@ -62,6 +58,45 @@ Static ngtcp2 library.
 
 %description static -l pl.UTF-8
 Statyczna biblioteka ngtcp2.
+
+%package crypto-gnutls
+Summary:	gnutls crypto library for ngtcp2
+Summary(pl.UTF-8):	Biblioteka kryptografii gnutls dla ngtcp2
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	gnutls-libs >= 3.7.3
+
+%description crypto-gnutls
+gnutls crypto library for ngtcp2.
+
+%description crypto-gnutls -l pl.UTF-8
+Biblioteka kryptografii gnutls dla ngtcp2.
+
+%package crypto-gnutls-devel
+Summary:	Header files for gnutls crypto library for ngtcp2
+Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki kryptografii gnutls dla ngtcp2
+Group:		Development/Libraries
+Requires:	%{name}-crypto-gnutls = %{version}-%{release}
+Requires:	%{name}-devel = %{version}-%{release}
+Requires:	gnutls-devel >= 3.7.3
+
+%description crypto-gnutls-devel
+Header files for gnutls crypto library for ngtcp2.
+
+%description crypto-gnutls-devel -l pl.UTF-8
+Pliki nagłówkowe biblioteki kryptografii gnutls dla ngtcp2.
+
+%package crypto-gnutls-static
+Summary:	Static gnutls crypto library for ngtcp2
+Summary(pl.UTF-8):	Statyczna biblioteka kryptografii gnutls dla ngtcp2
+Group:		Development/Libraries
+Requires:	%{name}-crypto-gnutls-devel = %{version}-%{release}
+
+%description crypto-gnutls-static
+Static gnutls crypto library for ngtcp2.
+
+%description crypto-gnutls-static -l pl.UTF-8
+Statyczna biblioteka kryptografii gnutls dla ngtcp2.
 
 %package apidocs
 Summary:	API documentation for ngtcp2 library
@@ -107,15 +142,14 @@ rm -rf $RPM_BUILD_ROOT
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 
+%post	crypto-gnutls -p /sbin/ldconfig
+%postun	crypto-gnutls -p /sbin/ldconfig
+
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS COPYING ChangeLog README.rst
 %attr(755,root,root) %{_libdir}/libngtcp2.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libngtcp2.so.15
-%if %{with gnutls}
-%attr(755,root,root) %{_libdir}/libngtcp2_crypto_gnutls.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libngtcp2_crypto_gnutls.so.7
-%endif
 
 %files devel
 %defattr(644,root,root,755)
@@ -125,17 +159,28 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/ngtcp2/ngtcp2_crypto.h
 %{_includedir}/ngtcp2/version.h
 %{_pkgconfigdir}/libngtcp2.pc
-%if %{with gnutls}
-%attr(755,root,root) %{_libdir}/libngtcp2_crypto_gnutls.so
-%{_includedir}/ngtcp2/ngtcp2_crypto_gnutls.h
-%{_pkgconfigdir}/libngtcp2_crypto_gnutls.pc
-%endif
 
 %if %{with static_libs}
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/libngtcp2.a
+%endif
+
 %if %{with gnutls}
+%files crypto-gnutls
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libngtcp2_crypto_gnutls.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libngtcp2_crypto_gnutls.so.7
+
+%files crypto-gnutls-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libngtcp2_crypto_gnutls.so
+%{_includedir}/ngtcp2/ngtcp2_crypto_gnutls.h
+%{_pkgconfigdir}/libngtcp2_crypto_gnutls.pc
+
+%if %{with static_libs}
+%files crypto-gnutls-static
+%defattr(644,root,root,755)
 %{_libdir}/libngtcp2_crypto_gnutls.a
 %endif
 %endif
