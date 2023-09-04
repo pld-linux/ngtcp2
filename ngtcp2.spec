@@ -1,6 +1,6 @@
 # TODO:
 # - subpackage crypto libs
-# - boringssl, picotls?
+# - boringssl, picotls, wolfssl >= 5.5.0?
 #
 # Conditional build:
 %bcond_with	apidocs		# API documentation (files missing in tarball)
@@ -11,15 +11,15 @@
 Summary:	Effort to implement QUIC protocol (RFC 9000)
 Summary(pl.UTF-8):	Próba implementacji protokołu QUIC (RFC 9000)
 Name:		ngtcp2
-Version:	0.10.0
+Version:	0.19.0
 Release:	1
 License:	MIT
 Group:		Libraries
 #Source0Download: https://github.com/ngtcp2/ngtcp2/releases
 Source0:	https://github.com/ngtcp2/ngtcp2/releases/download/v%{version}/%{name}-%{version}.tar.xz
-# Source0-md5:	494db5cc6302c6dbc0bb866dcc3a098c
+# Source0-md5:	62278184df29a743f742b37bf8c0bffc
 URL:		https://github.com/ngtcp2/ngtcp2
-%{?with_gnutls:BuildRequires:	gnutls-devel >= 3.7.2}
+%{?with_gnutls:BuildRequires:	gnutls-devel >= 3.7.3}
 BuildRequires:	libev-devel
 BuildRequires:	libstdc++-devel >= 6:7
 BuildRequires:	nghttp3-devel >= 0.2.0
@@ -28,6 +28,7 @@ BuildRequires:	pkgconfig >= 1:0.20
 BuildRequires:	rpm-build >= 4.6
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	xz
+%{?with_gnutls:Requires:	gnutls-libs >= 3.7.3}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -41,6 +42,8 @@ Summary:	Header files for ngtcp2 library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki ngtcp2
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
+%{?with_gnutls:Requires:	gnutls-devel >= 3.7.3}
+%{?with_openssl:Requires:	openssl-devel(quic) >= 1.1.1}
 
 %description devel
 Header files for ngtcp2 library.
@@ -108,10 +111,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc AUTHORS COPYING ChangeLog README.rst
 %attr(755,root,root) %{_libdir}/libngtcp2.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libngtcp2.so.8
+%attr(755,root,root) %ghost %{_libdir}/libngtcp2.so.15
 %if %{with gnutls}
 %attr(755,root,root) %{_libdir}/libngtcp2_crypto_gnutls.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libngtcp2_crypto_gnutls.so.2
+%attr(755,root,root) %ghost %{_libdir}/libngtcp2_crypto_gnutls.so.7
 %endif
 
 %files devel
