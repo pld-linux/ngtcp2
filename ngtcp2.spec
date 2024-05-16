@@ -10,23 +10,22 @@
 Summary:	Effort to implement QUIC protocol (RFC 9000)
 Summary(pl.UTF-8):	Próba implementacji protokołu QUIC (RFC 9000)
 Name:		ngtcp2
-Version:	0.19.0
+Version:	1.5.0
 Release:	1
 License:	MIT
 Group:		Libraries
 #Source0Download: https://github.com/ngtcp2/ngtcp2/releases
 Source0:	https://github.com/ngtcp2/ngtcp2/releases/download/v%{version}/%{name}-%{version}.tar.xz
-# Source0-md5:	62278184df29a743f742b37bf8c0bffc
+# Source0-md5:	d2c88c3dd77e73452997f38e8bb92242
 URL:		https://github.com/ngtcp2/ngtcp2
 %{?with_gnutls:BuildRequires:	gnutls-devel >= 3.7.3}
-BuildRequires:	libev-devel
-BuildRequires:	libstdc++-devel >= 6:7
-BuildRequires:	nghttp3-devel >= 0.2.0
+BuildRequires:	libstdc++-devel >= 6:10
 %{?with_openssl:BuildRequires:	openssl-devel(quic) >= 1.1.1}
 BuildRequires:	pkgconfig >= 1:0.20
 BuildRequires:	rpm-build >= 4.6
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	xz
+# for examples: libbrotli-devel >= 1.0.9, libev-devel, libstdc++-devel >= 6:11, nghttp3-devel >= 1.0.0, optionally jemalloc-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -149,7 +148,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc AUTHORS COPYING ChangeLog README.rst
 %attr(755,root,root) %{_libdir}/libngtcp2.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libngtcp2.so.15
+%attr(755,root,root) %ghost %{_libdir}/libngtcp2.so.16
 
 %files devel
 %defattr(644,root,root,755)
@@ -170,7 +169,7 @@ rm -rf $RPM_BUILD_ROOT
 %files crypto-gnutls
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libngtcp2_crypto_gnutls.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libngtcp2_crypto_gnutls.so.7
+%attr(755,root,root) %ghost %{_libdir}/libngtcp2_crypto_gnutls.so.8
 
 %files crypto-gnutls-devel
 %defattr(644,root,root,755)
