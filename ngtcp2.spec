@@ -1,11 +1,12 @@
 # TODO:
-# - boringssl, picotls, wolfssl >= 5.5.0? (in -crypto-* subpackages)
+# - boringssl, picotls? (in -crypto-* subpackages)
 #
 # Conditional build:
 %bcond_with	apidocs		# API documentation (files missing in tarball)
 %bcond_without	static_libs	# static libraries
 %bcond_without	gnutls		# gnutls crypto
-%bcond_with	openssl		# openssl crypto (needs patched openssl)
+%bcond_with	openssl		# OpenSSL crypto (needs patched openssl)
+%bcond_without	wolfssl		# wolfSSL crypto
 #
 Summary:	Effort to implement QUIC protocol (RFC 9000)
 Summary(pl.UTF-8):	Próba implementacji protokołu QUIC (RFC 9000)
@@ -97,6 +98,45 @@ Static gnutls crypto library for ngtcp2.
 %description crypto-gnutls-static -l pl.UTF-8
 Statyczna biblioteka kryptografii gnutls dla ngtcp2.
 
+%package crypto-wolfssl
+Summary:	wolfSSL crypto library for ngtcp2
+Summary(pl.UTF-8):	Biblioteka kryptografii wolfSSL dla ngtcp2
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	wolfssl >= 5.5.0
+
+%description crypto-wolfssl
+wolfSSL crypto library for ngtcp2.
+
+%description crypto-wolfssl -l pl.UTF-8
+Biblioteka kryptografii wolfSSL dla ngtcp2.
+
+%package crypto-wolfssl-devel
+Summary:	Header files for wolfSSL crypto library for ngtcp2
+Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki kryptografii wolfSSL dla ngtcp2
+Group:		Development/Libraries
+Requires:	%{name}-crypto-wolfssl = %{version}-%{release}
+Requires:	%{name}-devel = %{version}-%{release}
+Requires:	wolfssl-devel >= 5.5.0
+
+%description crypto-wolfssl-devel
+Header files for wolfSSL crypto library for ngtcp2.
+
+%description crypto-wolfssl-devel -l pl.UTF-8
+Pliki nagłówkowe biblioteki kryptografii wolfSSL dla ngtcp2.
+
+%package crypto-wolfssl-static
+Summary:	Static wolfSSL crypto library for ngtcp2
+Summary(pl.UTF-8):	Statyczna biblioteka kryptografii wolfSSL dla ngtcp2
+Group:		Development/Libraries
+Requires:	%{name}-crypto-wolfssl-devel = %{version}-%{release}
+
+%description crypto-wolfssl-static
+Static wolfSSL crypto library for ngtcp2.
+
+%description crypto-wolfssl-static -l pl.UTF-8
+Statyczna biblioteka kryptografii wolfSSL dla ngtcp2.
+
 %package apidocs
 Summary:	API documentation for ngtcp2 library
 Summary(pl.UTF-8):	Dokumentacja API biblioteki ngtcp2
@@ -117,7 +157,9 @@ Dokumentacja API biblioteki ngtcp2.
 	--disable-silent-rules \
 	%{!?with_static_libs:--disable-static} \
 	%{?with_gnutls:--with-gnutls} \
-	%{!?with_openssl:--without-openssl}
+	%{!?with_openssl:--without-openssl} \
+	%{?with_wolfssl:--with-wolfssl}
+
 %{__make}
 
 %if %{with apidocs}
@@ -181,6 +223,25 @@ rm -rf $RPM_BUILD_ROOT
 %files crypto-gnutls-static
 %defattr(644,root,root,755)
 %{_libdir}/libngtcp2_crypto_gnutls.a
+%endif
+%endif
+
+%if %{with wolfssl}
+%files crypto-wolfssl
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libngtcp2_crypto_wolfssl.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libngtcp2_crypto_wolfssl.so.5
+
+%files crypto-wolfssl-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libngtcp2_crypto_wolfssl.so
+%{_includedir}/ngtcp2/ngtcp2_crypto_wolfssl.h
+%{_pkgconfigdir}/libngtcp2_crypto_wolfssl.pc
+
+%if %{with static_libs}
+%files crypto-wolfssl-static
+%defattr(644,root,root,755)
+%{_libdir}/libngtcp2_crypto_wolfssl.a
 %endif
 %endif
 
