@@ -187,6 +187,9 @@ rm -rf $RPM_BUILD_ROOT
 %post	crypto-gnutls -p /sbin/ldconfig
 %postun	crypto-gnutls -p /sbin/ldconfig
 
+%post	crypto-wolfssl -p /sbin/ldconfig
+%postun	crypto-wolfssl -p /sbin/ldconfig
+
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS COPYING ChangeLog README.rst
