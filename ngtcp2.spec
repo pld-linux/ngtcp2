@@ -11,13 +11,13 @@
 Summary:	Effort to implement QUIC protocol (RFC 9000)
 Summary(pl.UTF-8):	Próba implementacji protokołu QUIC (RFC 9000)
 Name:		ngtcp2
-Version:	1.11.0
+Version:	1.15.1
 Release:	1
 License:	MIT
 Group:		Libraries
 #Source0Download: https://github.com/ngtcp2/ngtcp2/releases
 Source0:	https://github.com/ngtcp2/ngtcp2/releases/download/v%{version}/%{name}-%{version}.tar.xz
-# Source0-md5:	9719a1a56a41d387e14275ba55bb3ec7
+# Source0-md5:	816c9a90d290e7bde29ece48c693a02c
 URL:		https://github.com/ngtcp2/ngtcp2
 %{?with_gnutls:BuildRequires:	gnutls-devel >= 3.7.3}
 BuildRequires:	libstdc++-devel >= 6:10
@@ -27,7 +27,7 @@ BuildRequires:	rpm-build >= 4.6
 BuildRequires:	tar >= 1:1.22
 %{?with_wolfssl:BuildRequires:	wolfssl-devel >= 5.5.0}
 BuildRequires:	xz
-# for examples: libbrotli-devel >= 1.0.9, libev-devel, libstdc++-devel >= 6:11, nghttp3-devel >= 1.0.0, optionally jemalloc-devel
+# for examples: libbrotli-devel >= 1.0.9, libev-devel, libstdc++-devel >= 6:11, nghttp3-devel >= 1.11.0, optionally jemalloc-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
