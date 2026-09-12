@@ -11,23 +11,24 @@
 Summary:	Effort to implement QUIC protocol (RFC 9000)
 Summary(pl.UTF-8):	Próba implementacji protokołu QUIC (RFC 9000)
 Name:		ngtcp2
-Version:	1.23.0
+Version:	1.25.0
 Release:	1
 License:	MIT
 Group:		Libraries
 #Source0Download: https://github.com/ngtcp2/ngtcp2/releases
 Source0:	https://github.com/ngtcp2/ngtcp2/releases/download/v%{version}/%{name}-%{version}.tar.xz
-# Source0-md5:	79a96d734a9c22f8dbd1cb371e70be69
+# Source0-md5:	b2351f8b5e6421a88218ac86709b50a7
 URL:		https://github.com/ngtcp2/ngtcp2
 %{?with_gnutls:BuildRequires:	gnutls-devel >= 3.7.3}
 BuildRequires:	libstdc++-devel >= 6:10
-%{?with_openssl:BuildRequires:	openssl-devel(quic) >= 1.1.1}
+# SSL_set_quic_tls_cbs (openssl >= 3.5?) or SSL_provide_quic_data (quictls/patched openssl)
+%{?with_openssl:BuildRequires:	openssl-devel >= 3.5.0}
 BuildRequires:	pkgconfig >= 1:0.20
 BuildRequires:	rpm-build >= 4.6
 BuildRequires:	tar >= 1:1.22
 %{?with_wolfssl:BuildRequires:	wolfssl-devel >= 5.5.0}
 BuildRequires:	xz
-# for examples: libbrotli-devel >= 1.0.9, libev-devel, libstdc++-devel >= 6:11, nghttp3-devel >= 1.14.0, optionally jemalloc-devel
+# for examples: libbrotli-devel >= 1.0.9, libev-devel, libstdc++-devel >= 6:11, nghttp3-devel >= 1.18.0, optionally jemalloc-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -99,6 +100,45 @@ Static gnutls crypto library for ngtcp2.
 %description crypto-gnutls-static -l pl.UTF-8
 Statyczna biblioteka kryptografii gnutls dla ngtcp2.
 
+%package crypto-openssl
+Summary:	openssl crypto library for ngtcp2
+Summary(pl.UTF-8):	Biblioteka kryptografii openssl dla ngtcp2
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	openssl >= 3.5.0
+
+%description crypto-openssl
+openssl crypto library for ngtcp2.
+
+%description crypto-openssl -l pl.UTF-8
+Biblioteka kryptografii openssl dla ngtcp2.
+
+%package crypto-openssl-devel
+Summary:	Header files for openssl crypto library for ngtcp2
+Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki kryptografii openssl dla ngtcp2
+Group:		Development/Libraries
+Requires:	%{name}-crypto-openssl = %{version}-%{release}
+Requires:	%{name}-devel = %{version}-%{release}
+Requires:	openssl-devel >= 3.5.0
+
+%description crypto-openssl-devel
+Header files for openssl crypto library for ngtcp2.
+
+%description crypto-openssl-devel -l pl.UTF-8
+Pliki nagłówkowe biblioteki kryptografii openssl dla ngtcp2.
+
+%package crypto-openssl-static
+Summary:	Static openssl crypto library for ngtcp2
+Summary(pl.UTF-8):	Statyczna biblioteka kryptografii openssl dla ngtcp2
+Group:		Development/Libraries
+Requires:	%{name}-crypto-openssl-devel = %{version}-%{release}
+
+%description crypto-openssl-static
+Static openssl crypto library for ngtcp2.
+
+%description crypto-openssl-static -l pl.UTF-8
+Statyczna biblioteka kryptografii openssl dla ngtcp2.
+
 %package crypto-wolfssl
 Summary:	wolfSSL crypto library for ngtcp2
 Summary(pl.UTF-8):	Biblioteka kryptografii wolfSSL dla ngtcp2
@@ -158,7 +198,7 @@ Dokumentacja API biblioteki ngtcp2.
 	--disable-silent-rules \
 	%{!?with_static_libs:--disable-static} \
 	%{?with_gnutls:--with-gnutls} \
-	%{!?with_openssl:--without-openssl} \
+	--with-openssl%{!?with_openssl:=no} \
 	%{?with_wolfssl:--with-wolfssl}
 
 %{__make}
@@ -187,18 +227,21 @@ rm -rf $RPM_BUILD_ROOT
 %post	crypto-gnutls -p /sbin/ldconfig
 %postun	crypto-gnutls -p /sbin/ldconfig
 
+%post	crypto-openssl -p /sbin/ldconfig
+%postun	crypto-openssl -p /sbin/ldconfig
+
 %post	crypto-wolfssl -p /sbin/ldconfig
 %postun	crypto-wolfssl -p /sbin/ldconfig
 
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS COPYING ChangeLog README.rst
-%attr(755,root,root) %{_libdir}/libngtcp2.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libngtcp2.so.16
+%{_libdir}/libngtcp2.so.*.*.*
+%ghost %{_libdir}/libngtcp2.so.16
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libngtcp2.so
+%{_libdir}/libngtcp2.so
 %dir %{_includedir}/ngtcp2
 %{_includedir}/ngtcp2/ngtcp2.h
 %{_includedir}/ngtcp2/ngtcp2_crypto.h
@@ -214,12 +257,12 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gnutls}
 %files crypto-gnutls
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libngtcp2_crypto_gnutls.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libngtcp2_crypto_gnutls.so.8
+%{_libdir}/libngtcp2_crypto_gnutls.so.*.*.*
+%ghost %{_libdir}/libngtcp2_crypto_gnutls.so.8
 
 %files crypto-gnutls-devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libngtcp2_crypto_gnutls.so
+%{_libdir}/libngtcp2_crypto_gnutls.so
 %{_includedir}/ngtcp2/ngtcp2_crypto_gnutls.h
 %{_pkgconfigdir}/libngtcp2_crypto_gnutls.pc
 
@@ -230,15 +273,32 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
+%if %{with openssl}
+%files crypto-openssl
+%defattr(644,root,root,755)
+%{_libdir}/libngtcp2_crypto_ossl.so.*.*.*
+%ghost %{_libdir}/libngtcp2_crypto_ossl.so.0
+
+%files crypto-openssl-devel
+%defattr(644,root,root,755)
+%{_libdir}/libngtcp2_crypto_ossl.so
+%{_includedir}/ngtcp2/ngtcp2_crypto_ossl.h
+%{_pkgconfigdir}/libngtcp2_crypto_ossl.pc
+
+%files crypto-openssl-static
+%defattr(644,root,root,755)
+%{_libdir}/libngtcp2_crypto_ossl.a
+%endif
+
 %if %{with wolfssl}
 %files crypto-wolfssl
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libngtcp2_crypto_wolfssl.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libngtcp2_crypto_wolfssl.so.5
+%{_libdir}/libngtcp2_crypto_wolfssl.so.*.*.*
+%ghost %{_libdir}/libngtcp2_crypto_wolfssl.so.5
 
 %files crypto-wolfssl-devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libngtcp2_crypto_wolfssl.so
+%{_libdir}/libngtcp2_crypto_wolfssl.so
 %{_includedir}/ngtcp2/ngtcp2_crypto_wolfssl.h
 %{_pkgconfigdir}/libngtcp2_crypto_wolfssl.pc
 
