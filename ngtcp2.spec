@@ -5,14 +5,14 @@
 %bcond_with	apidocs		# API documentation (files missing in tarball)
 %bcond_without	static_libs	# static libraries
 %bcond_without	gnutls		# gnutls crypto
-%bcond_with	openssl		# OpenSSL crypto (needs patched openssl)
+%bcond_without	openssl		# OpenSSL crypto
 %bcond_without	wolfssl		# wolfSSL crypto
 #
 Summary:	Effort to implement QUIC protocol (RFC 9000)
 Summary(pl.UTF-8):	Próba implementacji protokołu QUIC (RFC 9000)
 Name:		ngtcp2
 Version:	1.25.0
-Release:	1
+Release:	2
 License:	MIT
 Group:		Libraries
 #Source0Download: https://github.com/ngtcp2/ngtcp2/releases
